@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Expense Tracker</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Smart Expense Tracker</h1>
+    <p class="subtitle">Track your daily expenses easily</p>
+
+    <div class="total">
+        <strong>Total Expense:</strong> ₹ {{ total }}
+    </div>
+
+    <!-- ADD EXPENSE FORM -->
+    <div class="form-card">
+        <form method="POST" action="/add">
+            <input type="number" step="0.01" name="amount" placeholder="Amount" required>
+            <input type="text" name="category" placeholder="Category" required>
+            <button type="submit">Add Expense</button>
+        </form>
+    </div>
+
+    <!-- TOGGLE CHART BUTTON -->
+    <button class="toggle-btn" onclick="toggleChart()">Show / Hide Chart</button>
+
+    <!-- CHART -->
+    <div id="chartContainer" class="chart-box">
+        <canvas id="expenseChart"></canvas>
+    </div>
+
+    <!-- EXPENSE TABLE -->
+    <h2 style="text-align:center;">Expense List</h2>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.id }}</td>
+            <td>₹ {{ expense.amount }}</td>
+            <td>{{ expense.category }}</td>
+            <td>{{ expense.date.strftime('%d-%m-%Y') }}</td>
+            <td>
+                <a href="/delete/{{ expense.id }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+<!-- CHART SCRIPT -->
+<script>
+    function toggleChart() {
+        const chartBox = document.getElementById("chartContainer");
+        chartBox.style.display =
+            chartBox.style.display === "none" ? "block" : "none";
+    }
+
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+
+    const categories = [
+        {% for expense in expenses %}
+            "{{ expense.category }}",
+        {% endfor %}
+    ];
+
+    const amounts = [
+        {% for expense in expenses %}
+            {{ expense.amount }},
+        {% endfor %}
+    ];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: categories,
+            datasets: [{
+                label: 'Expenses',
+                data: amounts,
+                backgroundColor: ['#3498db', '#e74c3c', '#2ecc71',
+                    '#f1c40f', '#9b59b6']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+
+</body>
+</html>
