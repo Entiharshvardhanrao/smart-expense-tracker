@@ -17,4 +17,4 @@ A full-stack Python web application to track daily expenses with category-wise v
 - **ORM:** SQLAlchemy
 - **Visualization:** Chart.js
 
-## 📂 Project Structure
+## 📂 Project Structure  
